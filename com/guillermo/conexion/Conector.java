@@ -76,7 +76,6 @@ public class Conector {
      * Metodo principal de la clase para obtener la conexion con una base de 
      * datos. Hay que indicar todos los parametros de conexión. Devolverá 
      * <code>null</code> si hay un problema de conexión.
-     * Se creará la base de datos indicada si existe y la usará
      * 
      * Para establecer conexión con bases MySQL u Oracle se recomienda usar 
      * sus metodos especificos. Alternativamente se puede usar los drivers y
@@ -85,17 +84,12 @@ public class Conector {
      * @param driver Driver empleado para la conexión a la base de datos
      * @param port Puerto de conexión que emplea la base de datos
      * @param url Direccion del servidor
-     * @param DBname Nombre de la base de datos
      * @param user Usuario
      * @param pw Contraseña
      * @return Conexión 
      */
-    public static Connection getConexion(String driver, String port, String url,String DBname, String user,String pw){
-        
-        Connection conn = Conector.getConection(driver, port, url, user, pw);
-        Conector.setDataBase(conn, DBname);
-        
-        return conn;
+    public static Connection getConexion(String driver, String port, String url, String user,String pw){
+        return Conector.getConection(driver, port, url, user, pw);
     }
     
     /**
@@ -117,34 +111,32 @@ public class Conector {
      * @return Conexión
      */
     public static Connection getConexionMySQL(String port, String url,String DBname, String user,String pw){
-        return Conector.getConexion(DRIVER_MYSQL, port, url, DBname, user, pw);
+        Connection conn = Conector.getConexion(DRIVER_MYSQL, port, url, user, pw);
+        Conector.setDataBase(conn, DBname);
+        return conn;
     }
     
     /**
      * Método principal de conexiones a bases de datos Oracle. Hay que
-     * indicar el puerto, la dirección del servidor, el nombre de la base de 
-     * datos y las credenciales.
-     * Se creará la base de datos indicada si existe y la usará
+     * indicar el puerto, la dirección del servidor y las credenciales.
      * 
      * Está indicado para conexiones a Oracle que no usan su puerto por defecto.
      * Si no se puede establecer conexión, devolverá <code>null</code>
      * 
      * @param port Puerto de conexión
      * @param url Direccion del servidor
-     * @param DBname Nombre de la base de datos
      * @param user Nombre de usuario
      * @param pw Contraseña
      * @return Conexión
      */
-    public static Connection getConexionOracle(String port, String url, String DBname, String user, String pw){
-        return Conector.getConexion(DRIVER_ORACLE, port, DBname, url, user, pw);
+    public static Connection getConexionOracle(String port, String url, String user, String pw){
+        return Conector.getConexion(DRIVER_ORACLE, port, url, user, pw);
     }
     
     /**
      * Devolverá una conexión a MySQL.
      * Se creará la base de datos indicada si existe y la usará
      * Si no se puede establecer conexión, devolverá <code>null</code>
-     * 
      *
      * @param url Direccion del servidor
      * @param DBname Nombre de la base de datos
@@ -158,25 +150,21 @@ public class Conector {
     
     /**
      * Devolverá una conexión a Oracle.
-     * Se creará la base de datos indicada si existe y la usará
      * Si no se puede establecer conexión, devolverá <code>null</code>
-     * 
      *
      * @param url Direccion del servidor
-     * @param DBname Nombre de la base de datos
      * @param user Usuario
      * @param pw Contraseña
      * @return Conexión 
      */
-    public static Connection getConexionOracle(String url, String DBname, String user, String pw){
-        return Conector.getConexionOracle(PORT_ORACLE, url, DBname, user, pw);
+    public static Connection getConexionOracle(String url, String user, String pw){
+        return Conector.getConexionOracle(PORT_ORACLE, url, user, pw);
     }
     
     /**
      * Devolverá una conexión a MySQL en <code>localhost</code>.
      * Se creará la base de datos indicada si existe y la usará
      * Si no se puede establecer conexión, devolverá <code>null</code>
-     * 
      *
      * @param DBname Nombre de la base de datos
      * @param user Usuario
@@ -189,45 +177,28 @@ public class Conector {
     
     /**
      * Devolverá una conexión a Oracle en <code>localhost</code>.
-     * Se creará la base de datos indicada si existe y la usará
      * Si no se puede establecer conexión, devolverá <code>null</code>
-     * 
-     *
-     * @param DBname Nombre de la base de datos
-     * @param user Usuario
-     * @param pw Contraseña
-     * @return Conexión 
-     */
-    public static Connection getConexionOracle(String DBname, String user, String pw){
-        return Conector.getConexionOracle(URL_DEFAULT,DBname, user,pw);
-    }
-    
-    /**
-     * Devolverá una conexión a MySQL en <code>localhost</code>.
-     * Se conectará a la base de datos <code>test</code> por defecto.
-     * Si no se puede establecer conexión, devolverá <code>null</code>
-     * 
-     *
-     * @param user Usuario
-     * @param pw Contraseña
-     * @return Conexión 
-     */
-    public static Connection getConexionMySQL(String user, String pw){
-        return Conector.getConexionMySQL(URL_DEFAULT, DB_DEFAULT, user, pw);
-    }
-    
-    /**
-     * Devolverá una conexión a Oracle en <code>localhost</code>.
-     * Se conectará a la base de datos <code>test</code> por defecto.
-     * Si no se puede establecer conexión, devolverá <code>null</code>
-     * 
      *
      * @param user Usuario
      * @param pw Contraseña
      * @return Conexión 
      */
     public static Connection getConexionOracle(String user, String pw){
-        return Conector.getConexionOracle(URL_DEFAULT,DB_DEFAULT, user,pw);
+        return Conector.getConexionOracle(URL_DEFAULT, user,pw);
+    }
+    
+    /**
+     * Devolverá una conexión a MySQL en <code>localhost</code>.
+     * Se conectará a la base de datos <code>test</code> por defecto.
+     * Si no se puede establecer conexión, devolverá <code>null</code>
+     *
+     * @param user Usuario
+     * @param pw Contraseña
+     * @return Conexión 
+     */
+    
+    public static Connection getConexionMySQL(String user, String pw){
+        return Conector.getConexionMySQL(URL_DEFAULT, DB_DEFAULT, user, pw);
     }
     
     /**
