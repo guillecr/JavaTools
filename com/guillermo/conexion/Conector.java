@@ -8,7 +8,7 @@ import java.sql.SQLException;
 /**
  * Clase generadora de conexiones
  * 
- * @version 0.5.0
+ * @version 0.7.0
  * @author Guillermo Casas Reche
  * @author g.casas.r94@gmail.com
  */
@@ -16,10 +16,13 @@ public class Conector {
     
     public static final String DRIVER_MYSQL = "jdbc:mysql://";
     public static final String DRIVER_ORACLE = "jdbc:oracle:thin:@";
+    public static final String DRIVER_POSTGRESQL = "jdbc:postgresql://";
+    public static final String DRIVER_SQLITE = "jdbc:sqlite:";
     
     public static final String PORT_MYSQL = "3306";
     public static final String PORT_MYSQL_DOCKER = "33060";
     public static final String PORT_ORACLE = "1521:xe";
+    public static final String PORT_POSTGRESQL = "5432";
     
     
     private static final String URL_DEFAULT = "localhost";
@@ -33,7 +36,7 @@ public class Conector {
     ================================================
     */
     
-    private static Connection getConection(String driver,String port ,String URLconection, String user, String pw){
+    private static Connection getConn(String driver,String port ,String URLconection, String user, String pw){
         
         String driverUrl = generateUrl(driver,port,URLconection);
         System.out.println("Ruta: " + driverUrl);
@@ -49,7 +52,8 @@ public class Conector {
     }
     
     private static String generateUrl(String driver, String port, String url){
-        return driver + url + ":" + port;
+        port = (port == null) ? "" : ":"+port;
+        return driver + url + port;
     }
     
     private static void setDataBase(Connection conn, String db){
@@ -73,9 +77,9 @@ public class Conector {
     */
     
     /**
-     * Metodo principal de la clase para obtener la conexion con una base de 
-     * datos. Hay que indicar todos los parametros de conexión. Devolverá 
-     * <code>null</code> si hay un problema de conexión.
+     * Método principal de <code>Conector</code> para obtener la conexion con una base de 
+     * datos. Hay que indicar todos los parámetros de conexión. Devolverá 
+     * <code>null</code> si hay un problema en la conexión.
      * 
      * Para establecer conexión con bases MySQL u Oracle se recomienda usar 
      * sus metodos especificos. Alternativamente se puede usar los drivers y
@@ -89,17 +93,17 @@ public class Conector {
      * @return Conexión 
      */
     public static Connection getConexion(String driver, String port, String url, String user,String pw){
-        return Conector.getConection(driver, port, url, user, pw);
+        return Conector.getConn(driver, port, url, user, pw);
     }
     
     /**
-     * Método principal de conexiones a bases de datos MySQL. Hay que
+     * Método principal para conexiones a bases de datos MySQL. Hay que
      * indicar el puerto, la dirección del servidor, el nombre de la base de 
      * datos y las credenciales.
      * Se creará la base de datos indicada si existe y la usará
      * 
      * Está indicado para conexiones a MySQL que no usan su puerto por defecto.
-     * Para establecer conexión con docker, suele emplear el puerto 
+     * Las bases de datos MySQL montadas en Docker suele emplear el puerto 
      * <code>PORT_MYSQL_DOCKER</code>.
      * Si no se puede establecer conexión, devolverá <code>null</code>
      * 
@@ -111,13 +115,13 @@ public class Conector {
      * @return Conexión
      */
     public static Connection getConexionMySQL(String port, String url,String DBname, String user,String pw){
-        Connection conn = Conector.getConexion(DRIVER_MYSQL, port, url, user, pw);
+        Connection conn = Conector.getConn(DRIVER_MYSQL, port, url, user, pw);
         Conector.setDataBase(conn, DBname);
         return conn;
     }
     
     /**
-     * Método principal de conexiones a bases de datos Oracle. Hay que
+     * Método principal para conexiones a bases de datos Oracle. Hay que
      * indicar el puerto, la dirección del servidor y las credenciales.
      * 
      * Está indicado para conexiones a Oracle que no usan su puerto por defecto.
@@ -132,10 +136,44 @@ public class Conector {
     public static Connection getConexionOracle(String port, String url, String user, String pw){
         return Conector.getConexion(DRIVER_ORACLE, port, url, user, pw);
     }
+
+    /**
+     * Método principal de conexiones a bases de datos Postgres. Hay que
+     * indicar el puerto, la dirección del servidor y las credenciales.
+     *
+     * Si no se puede establecer conexión, devolverá <code>null</code>
+     *
+     * @param port Puerto de conexión
+     * @param url Direccion del servidor
+     * @param user Nombre de usuario
+     * @param pw Contraseña
+     * @return Conexión
+     */
+    public static Connection getConexionPostgres(String url, String user, String pw){
+        return Conector.getConexion(DRIVER_POSTGRESQL,PORT_POSTGRESQL, url, user, pw);
+    }
     
     /**
+     * Método principal para conexiones a bases de datos SQLite. 
+     * Bastará solo con indicar la path de la base de datos en la que se encuentra.
+     * 
+     * Si no se puede establecer conexión, devolverá <code>null</code>
+     * 
+     * @param url Path de la BD SQLite
+     * @return Conexión a la base de datos
+     */
+    public static Connection getConexionSQLite(String url){
+        return Conector.getConexion(DRIVER_SQLITE, null, url, "", "");
+    }
+
+    // ====================================================
+    // DEFAULTS DE LOS METODOS PRINCIPALES DE CONEXIÓN
+    // ====================================================
+
+    /**
      * Devolverá una conexión a MySQL.
-     * Se creará la base de datos indicada si existe y la usará
+     * Usará por defecto la base de datos indicada. Si no existe, la creará primero.
+     * 
      * Si no se puede establecer conexión, devolverá <code>null</code>
      *
      * @param url Direccion del servidor
@@ -150,6 +188,8 @@ public class Conector {
     
     /**
      * Devolverá una conexión a Oracle.
+     * Usará el puerto estandar de Oracle.
+     * 
      * Si no se puede establecer conexión, devolverá <code>null</code>
      *
      * @param url Direccion del servidor
@@ -163,7 +203,8 @@ public class Conector {
     
     /**
      * Devolverá una conexión a MySQL en <code>localhost</code>.
-     * Se creará la base de datos indicada si existe y la usará
+     * Usará por defecto la base de datos indicada. Si no existe, la creará primero.
+     * 
      * Si no se puede establecer conexión, devolverá <code>null</code>
      *
      * @param DBname Nombre de la base de datos
@@ -177,6 +218,8 @@ public class Conector {
     
     /**
      * Devolverá una conexión a Oracle en <code>localhost</code>.
+     * Usará el puerto estandar de Oracle.
+     * 
      * Si no se puede establecer conexión, devolverá <code>null</code>
      *
      * @param user Usuario
@@ -190,6 +233,7 @@ public class Conector {
     /**
      * Devolverá una conexión a MySQL en <code>localhost</code>.
      * Se conectará a la base de datos <code>test</code> por defecto.
+     * 
      * Si no se puede establecer conexión, devolverá <code>null</code>
      *
      * @param user Usuario
@@ -198,15 +242,16 @@ public class Conector {
      */
     
     public static Connection getConexionMySQL(String user, String pw){
-        return Conector.getConexionMySQL(URL_DEFAULT, DB_DEFAULT, user, pw);
+        return Conector.getConexionMySQL(DB_DEFAULT, user, pw);
     }
     
     /**
-     * Devolverá una conexión a MySQL en <code>localhost</code>.
-     * Se conectará a la base de datos <code>test</code> por defecto.
-     * Las credenciales serán:
-     * - Usuario: 'root'
-     * - Password: ''
+     * Devolverá una conexión a MySQL en su forma mas basica. Empleará como parametros:
+     * <p> - Puerto: 3306</p>
+     * <p> - URL: <code>localhost</code></p>
+     * <p> - DBname: <code>test</code><p>
+     * <p> - Usuario: 'root'</p>
+     * <p> - Password: ''</p>
      * 
      * Si no se puede establecer conexión, devolverá <code>null</code>
      *
