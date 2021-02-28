@@ -13,3 +13,18 @@ Java.
 ## Dependencias:
 + JDBC MySQL (Conector)
 + GSON (Archivo)
+
+# Java Swing
+Compilación de ejemplos de uso de los elementos mas usados de Swing
++ Visualización de archivos HTML
++ JCalendar
++ JCheckBox
++ JComboBox
++ JFileChooser
++ JRadioButtons
++ JSlider
++ JSpinner
++ JTable
++ jTree
++ Layouts
++ Ventanas emergentes
