@@ -5,13 +5,18 @@ Java.
 
 ## Contenidos:
 + Manejo de archivos (Archivo)
-+ Generador de conexiones a MySQL (Conector)
-+ Gestion de base de datos (DataBaseManager)
-+ Manejo de fechas (Fecha)
++ Generador de conexiones (Conector)
+  - MySQL
+  - SQLite
+  - Oracle
+  - PostgreSQL
++ Gestion de base de datos SQL (DataBaseManager)
++ Gestor de base de datos MongoDB (MongoCRUD)
++ Clase Fecha (Fecha)
 + Entrada por teclado en consola (Entrada)
 
 ## Dependencias:
-+ JDBC MySQL (Conector)
++ JDBC de la base a conectar (Conector y MongoCRUD)
 + GSON (Archivo)
 
 # Java Swing
